@@ -1,0 +1,43 @@
+# Create the app at https://api.slack.com/apps -> "Create New App" -> "From a manifest",
+# paste this file, then install it to the workspace.
+# Copy "Signing Secret" (Basic Information) and "Bot User OAuth Token" (OAuth & Permissions)
+# into SLACK_SIGNING_SECRET and SLACK_BOT_TOKEN in .env.local.
+#
+# Replace <NEON_BRANCH_ID> and <NEON_FUNCTION_HOST_SUFFIX> in the three URLs with the
+# values `neon link` wrote to .env.local. The bot function's slug is "slackbot".
+display_information:
+  name: WorkOS Answers
+  description: Answers questions about your WorkOS users, organizations, and sign-ins for support, sales, and security.
+  background_color: "#1a1a2e"
+features:
+  bot_user:
+    display_name: workos-answers
+    always_online: true
+  slash_commands:
+    - command: /workos
+      url: https://<NEON_BRANCH_ID>-slackbot<NEON_FUNCTION_HOST_SUFFIX>/slack/commands
+      description: Ask a question about your WorkOS users and organizations
+      usage_hint: which accounts renew in the next 60 days, and are any of them at risk?
+      should_escape: false
+oauth_config:
+  scopes:
+    bot:
+      - app_mentions:read   # @workos-answers questions in channels
+      - chat:write          # reply in threads, private (ephemeral) replies
+      - commands            # /workos
+      - im:history          # questions and follow-ups in DMs
+      - channels:read       # conversations.info: refuse Slack Connect (shared) channels
+      - groups:read         # same check for private channels
+      - im:read             # same check for DMs
+settings:
+  event_subscriptions:
+    request_url: https://<NEON_BRANCH_ID>-slackbot<NEON_FUNCTION_HOST_SUFFIX>/slack/events
+    bot_events:
+      - app_mention
+      - message.im
+  interactivity:
+    is_enabled: true
+    request_url: https://<NEON_BRANCH_ID>-slackbot<NEON_FUNCTION_HOST_SUFFIX>/slack/interactions
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false
