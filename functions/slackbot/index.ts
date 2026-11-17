@@ -452,6 +452,9 @@ export default async function handler(request: Request): Promise<Response> {
 	const { pathname } = new URL(request.url);
 	if (request.method === "GET") return Response.json({ ok: true, service: "workos-slack-bot", routes: ["POST /slack/commands", "POST /slack/events", "POST /slack/interactions"] });
 	if (request.method !== "POST") return new Response("method not allowed", { status: 405 });
+	// The first deploy runs before these exist: it starts the sync, which creates the workos schema that npm run db:setup needs.
+	const missing = ["SLACK_SIGNING_SECRET", "SLACK_BOT_TOKEN", "ANALYST_DATABASE_URL"].filter((name) => !process.env[name]);
+	if (missing.length) return new Response(`Not configured yet: set ${missing.join(", ")} (npm run db:setup writes ANALYST_DATABASE_URL), then run neon deploy --env .env.local again.`, { status: 503 });
 
 	const raw = await request.text(); // verify the exact bytes Slack signed, before parsing
 	if (!verifySlack(request.headers, raw)) return new Response("invalid signature", { status: 401 });

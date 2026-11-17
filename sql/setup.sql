@@ -1,12 +1,14 @@
 -- Database setup for the WorkOS Slack bot.
 --
--- Run it once with psql, after the first deploy has created the workos schema (within five minutes):
+-- Run it once, after the first deploy has created the workos schema (within five minutes):
+--
+--   npm run db:setup
+--
+-- The script generates a password for identity_analyst, fills in :'analyst_password', runs the file
+-- in one transaction, and writes ANALYST_DATABASE_URL to .env.local. To run it with psql instead:
 --
 --   export ANALYST_PASSWORD=$(openssl rand -hex 24)
 --   psql "$(neon connection-string)" -v ON_ERROR_STOP=1 -1 -v analyst_password="$ANALYST_PASSWORD" -f sql/setup.sql
---
--- psql fills in :'analyst_password', so no password is stored in this file.
--- -1 runs the file in one transaction: if any statement fails, nothing is created.
 
 -- Product data, linked to WorkOS organizations -------------------------------
 

@@ -10,10 +10,11 @@ export default defineConfig({
       name: "Slack bot: answers from your WorkOS data",
       source: "./functions/slackbot/index.ts",
       env: {
-        SLACK_SIGNING_SECRET: { value: process.env.SLACK_SIGNING_SECRET, required: true },
-        SLACK_BOT_TOKEN: { value: process.env.SLACK_BOT_TOKEN, required: true },
-        // Read-only role for the agent's SQL. DATABASE_URL (owner) is injected by Neon for bot state.
-        ANALYST_DATABASE_URL: { value: process.env.ANALYST_DATABASE_URL, required: true },
+        // Optional so the first deploy can start the sync before these exist. Until they're set, the bot answers 503.
+        SLACK_SIGNING_SECRET: { value: process.env.SLACK_SIGNING_SECRET, required: false, onUndefined: "skip" },
+        SLACK_BOT_TOKEN: { value: process.env.SLACK_BOT_TOKEN, required: false, onUndefined: "skip" },
+        // Read-only role for the agent's SQL, written by npm run db:setup. DATABASE_URL (owner) is injected by Neon for bot state.
+        ANALYST_DATABASE_URL: { value: process.env.ANALYST_DATABASE_URL, required: false, onUndefined: "skip" },
         AI_MODEL: { value: process.env.AI_MODEL, required: false, onUndefined: "skip" },
       },
     },
